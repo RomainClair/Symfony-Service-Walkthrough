@@ -17,8 +17,11 @@ class ProductController extends AbstractController
     {
         // Recover the connected user
         $currentUser = $this->getUser();
+        // Get the amount of today's discount offer
         $todaysDiscount = $specialOfferRepository->findSpecialOfferForToday()->getDiscount();
+        // Get the amount of the personnal loyalty discount for the connected user
         $currentUserDiscount = $this->getUser()->getLoyaltyDiscount();
+        // The user's will have the best of the 2 non cumulative discounts
         if ($todaysDiscount > $currentUserDiscount) {
             $price = $product->getPrice() * $currentUserDiscount;
         } else {
