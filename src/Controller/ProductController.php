@@ -16,16 +16,9 @@ class ProductController extends AbstractController
     /**
      * @Route("/product/{id}", name="product", requirements={"id"="\d+"})
      */
-    public function index(
-        Product $product,
-        SpecialOfferRepository $specialOfferRepository,
-        PriceCalculator $priceCalculator
-    ): Response {
-        $price = $priceCalculator->personalPrice(
-            $this->getUser(),
-            $product,
-            $specialOfferRepository->findSpecialOfferForToday()
-        );
+    public function index(Product $product, PriceCalculator $priceCalculator): Response 
+    {
+        $price = $priceCalculator->personalPrice($this->getUser(), $product);
         return $this->render('product/index.html.twig', [
             'product' => $product,
             'price' => $price,
