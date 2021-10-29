@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Entity\User;
 use App\Repository\SpecialOfferRepository;
 use App\Repository\UserRepository;
+use App\Service\PriceCalculator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,20 +16,16 @@ class ProductController extends AbstractController
     /**
      * @Route("/product/{id}", name="product", requirements={"id"="\d+"})
      */
-    public function index(Product $product, SpecialOfferRepository $specialOfferRepository): Response
-    {
-        // Recover the connected user
-        $currentUser = $this->getUser();
-        // Get the amount of today's discount offer
-        $todaysDiscount = $specialOfferRepository->findSpecialOfferForToday()->getDiscount();
-        // Get the amount of the personnal loyalty discount for the connected user
-        $currentUserDiscount = $currentUser->getLoyaltyDiscount();
-        // The user's will have the best of the 2 non cumulative discounts
-        if ($todaysDiscount > $currentUserDiscount) {
-            $price = $product->getPrice() * $currentUserDiscount;
-        } else {
-            $price = $product->getPrice() * $todaysDiscount;
-        }
+    public function index(
+        Product $product,
+        SpecialOfferRepository $specialOfferRepository,
+        PriceCalculator $priceCalculator
+    ): Response {
+        $price = $priceCalculator->personalPrice(
+            $this->getUser(),
+            $product,
+            $specialOfferRepository->findSpecialOfferForToday()
+        );
         return $this->render('product/index.html.twig', [
             'product' => $product,
             'price' => $price,
@@ -39,7 +36,7 @@ class ProductController extends AbstractController
     protected function getUser()
     {
         $user = new User();
-        $user->setLoyaltyDiscount(0.9);
+        $user->setLoyaltyDiscount(0.6);
         return $user;
     }
 }

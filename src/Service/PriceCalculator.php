@@ -15,10 +15,14 @@ class PriceCalculator
      * The discount of this specific customer according to it's loyalty program
      * Return the price of the product using the best discount
      */
-    public function personalPrice(User $user, Product $product, SpecialOffer $specialOffer): float
+    public function personalPrice(User $user, Product $product, ?SpecialOffer $specialOffer): float
     {
         $currentUserDiscount = $user->getLoyaltyDiscount();
-        $todaysDiscount = $specialOffer->getDiscount();
+        if ($specialOffer !== null) {
+            $todaysDiscount = $specialOffer->getDiscount();
+        } else {
+            $todaysDiscount = 1;
+        }
         if ($todaysDiscount > $currentUserDiscount) {
             $price = $product->getPrice() * $currentUserDiscount;
         } else {
