@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Entity\User;
 use App\Repository\SpecialOfferRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,7 +22,7 @@ class ProductController extends AbstractController
         // Get the amount of today's discount offer
         $todaysDiscount = $specialOfferRepository->findSpecialOfferForToday()->getDiscount();
         // Get the amount of the personnal loyalty discount for the connected user
-        $currentUserDiscount = $this->getUser()->getLoyaltyDiscount();
+        $currentUserDiscount = $currentUser->getLoyaltyDiscount();
         // The user's will have the best of the 2 non cumulative discounts
         if ($todaysDiscount > $currentUserDiscount) {
             $price = $product->getPrice() * $currentUserDiscount;
@@ -31,5 +33,13 @@ class ProductController extends AbstractController
             'product' => $product,
             'price' => $price,
         ]);
+    }
+
+    // Redefine getUser for test purposes
+    protected function getUser()
+    {
+        $user = new User();
+        $user->setLoyaltyDiscount(0.9);
+        return $user;
     }
 }

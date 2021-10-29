@@ -21,7 +21,9 @@ class SpecialOfferRepository extends ServiceEntityRepository
 
     public function findSpecialOfferForToday(): ?SpecialOffer
     {
-        return null;
+        $offer = new SpecialOffer();
+        $offer->setDiscount(0.75);
+        return $offer;
     }
 
     // /**
