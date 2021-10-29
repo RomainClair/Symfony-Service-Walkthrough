@@ -8,6 +8,13 @@ use App\Entity\User;
 
 class PriceCalculator
 {
+    /**
+     * Compute the personnalized price for a product
+     * There are two non cumulative discount possible :
+     * The discount that can be applied today to every customer
+     * The discount of this specific customer according to it's loyalty program
+     * Return the price of the product using the best discount
+     */
     public function personalPrice(User $user, Product $product, SpecialOffer $specialOffer): float
     {
         $currentUserDiscount = $user->getLoyaltyDiscount();
