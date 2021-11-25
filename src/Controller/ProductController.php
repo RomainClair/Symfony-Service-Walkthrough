@@ -27,13 +27,9 @@ class ProductController extends AbstractController
             $todaysDiscount = $offer->getDiscount();
         }
         // Get the amount of the personnal loyalty discount for the connected user
-        $currentUserDiscount = $currentUser->getLoyaltyDiscount();
+        $userDiscount = $currentUser->getLoyaltyDiscount();
         // The user's will have the best of the 2 non cumulative discounts
-        if ($todaysDiscount > $currentUserDiscount) {
-            $price = $product->getPrice() * $currentUserDiscount;
-        } else {
-            $price = $product->getPrice() * $todaysDiscount;
-        }
+        $price = min($product->getPrice() * $userDiscount, $product->getPrice() * $todaysDiscount);
         return $this->render('product/index.html.twig', [
             'product' => $product,
             'price' => $price,
